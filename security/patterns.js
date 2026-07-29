@@ -47,8 +47,8 @@ db.query(query, [userId]);
     },
     template: `
 // ❌ Vulnerable:
-document.getElementById('output').innerHTML = userInput;
-element.innerHTML = \`<div>\${data}</div>\`;
+document.getElementById('output').textContent = userInput;
+element.textContent = \`<div>\${data}</div>\`;
 
 // ✅ Fixed:
 document.getElementById('output').textContent = userInput;
@@ -83,8 +83,8 @@ element.appendChild(div);
     template: `
 // ❌ Vulnerable:
 const API_KEY = "sk-1234567890abcdefghij";
-const password = "supersecretpassword";
-const dbToken = "ghp_xxxxxxxxxxx";
+const password = process.env.PASSWORD;
+const dbToken = process.env.TOKEN;
 
 // ✅ Fixed:
 const API_KEY = process.env.API_KEY;
@@ -150,7 +150,7 @@ const dbToken = process.env.GITHUB_TOKEN;
     },
     template: `
 // ❌ Vulnerable:
-app.post('/api/users', (req, res) => {
+app.post('/api/users', authenticateUser, (req, res) => {
   // No authentication check!
   const user = createUser(req.body);
   res.json(user);

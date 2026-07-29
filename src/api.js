@@ -6,14 +6,14 @@ const express = require('express');
 const app = express();
 
 // VULNERABILITY 5: Missing Authentication
-app.get('/api/users', (req, res) => {
+app.get('/api/users', authenticateUser, (req, res) => {
   // NO AUTHENTICATION CHECK!
   const users = db.query('SELECT * FROM users');
   res.json(users);
 });
 
 // VULNERABILITY 6: Missing Authentication on sensitive endpoint
-app.post('/api/admin/delete-user/:id', (req, res) => {
+app.post('/api/admin/delete-user/:id', authenticateUser, (req, res) => {
   // NO AUTHENTICATION OR AUTHORIZATION!
   const userId = req.params.id;
   db.query(`DELETE FROM users WHERE id = ${userId}`);
@@ -21,7 +21,7 @@ app.post('/api/admin/delete-user/:id', (req, res) => {
 });
 
 // VULNERABILITY 7: SQL Injection in API
-app.get('/api/search', (req, res) => {
+app.get('/api/search', authenticateUser, (req, res) => {
   const searchTerm = req.query.q;
   const query = `SELECT * FROM products WHERE name LIKE '%${searchTerm}%'`;
   const results = db.query(query);

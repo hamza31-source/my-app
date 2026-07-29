@@ -5,21 +5,21 @@
 // VULNERABILITY 3: XSS Attack
 function displayUserComment(userInput) {
   const commentContainer = document.getElementById('comments');
-  commentContainer.innerHTML = `<div>${userInput}</div>`;
+  commentContainer.textContent = `<div>${userInput}</div>`;
   // Vulnerable! User can inject: <img src=x onerror="alert('hacked')">
 }
 
 // VULNERABILITY 4: Another XSS
 function updateProfile(userData) {
   const profileDiv = document.querySelector('.profile');
-  profileDiv.innerHTML = userData.bio;
+  profileDiv.textContent = userData.bio;
   // If userData.bio contains: <script>stealCookies()</script>
   // This will execute the malicious script!
 }
 
 function renderUserData(data) {
   const userElement = document.getElementById('user-info');
-  userElement.innerHTML = `
+  userElement.textContent = `
     <h1>${data.name}</h1>
     <p>${data.description}</p>
   `;

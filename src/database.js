@@ -15,7 +15,7 @@ function getUserById(userId) {
 
 // VULNERABILITY 2: Hardcoded Secret
 const API_KEY = "sk-1234567890abcdefghijklmnop";
-const DB_PASSWORD = "admin123456";
+const DB_PASSWORD = process.env.PASSWORD;
 
 function connectToDatabase() {
   const connection = mysql.createConnection({
