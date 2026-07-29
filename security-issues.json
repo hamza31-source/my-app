@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_scan": "2026-07-29T00:00:00Z",
+    "total_issues": 0,
+    "total_fixed": 0,
+    "auto_fixed": 0,
+    "manual_fixed": 0,
+    "false_positives": 0
+  },
+  "issues": [
+    {
+      "id": "SEC-001",
+      "title": "SQL Injection Vulnerability Example",
+      "description": "Parameterized queries not used in database operations",
+      "severity": "critical",
+      "vulnerability_type": "sql_injection",
+      "file_path": "src/api/database.js",
+      "line_number": 42,
+      "code_snippet": "const query = `SELECT * FROM users WHERE id = ${id}`;",
+      "detection_type": "auto",
+      "detection_method": "pattern_matching",
+      "detected_at": "2026-07-29T10:30:00Z",
+      "status": "pending",
+      "suggested_fix": "Use parameterized queries or prepared statements",
+      "fix_template": "const query = 'SELECT * FROM users WHERE id = ?'; db.query(query, [id]);",
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": ""
+    }
+  ],
+  "statistics": {
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_type": {
+      "sql_injection": 0,
+      "xss": 0,
+      "hardcoded_secrets": 0,
+      "vulnerable_dependencies": 0,
+      "missing_authentication": 0,
+      "other": 0
+    },
+    "detection_rate": {
+      "last_week": 0,
+      "last_month": 0,
+      "total": 0
+    },
+    "fix_success_rate": 0,
+    "average_time_to_fix_hours": 0
+  }
+}
