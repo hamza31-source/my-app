@@ -14,7 +14,6 @@ This **automatically**:
 3. 🌳 Creates a new branch from `main`
 4. 📤 Pushes code to GitHub
 5. 🔗 Creates a GitHub PR
-6. 💬 Sends Slack notification
 
 ---
 
@@ -55,21 +54,12 @@ fix-security-issues --all
   - Security guidelines
   - PR link: `https://github.com/YOUR_OWNER/my-app/pull/XXX`
 
-### Step 6: Slack Notification
-- Sends message to `#security` channel
-- Includes PR link for quick review
-- Shows issue details and fix status
 
 ---
 
 ## Commands
 
-- `fix-security-issues --scan` - Scan only (no fixes, no PR)
-- `fix-security-issues --fix` - Fix issues locally (no PR)
-- `fix-security-issues --create-prs` - Create PRs for fixed issues
-- `fix-security-issues --all` - **Full workflow** (scan + fix + PR + notify) ⭐
-- `fix-security-issues --manual <issue-id>` - AI-powered analysis for complex issue
-- `fix-security-issues --report` - Generate security report
+- `fix-security-issues --all` - **Full workflow** (scan + fix + PR) ⭐ **RECOMMENDED**
 
 ## What Gets Fixed Automatically
 
@@ -145,62 +135,22 @@ PR: #500 → Click to Review
 Status: Auto-fixed
 ```
 
-## Usage Examples
+## Usage
 
-### ⭐ Full Automated Workflow (Recommended)
+### ⭐ Full Automated Workflow
 ```bash
 fix-security-issues --all
 ```
+
 **Does everything automatically:**
-- Detects issues
-- Fixes them
-- Creates new branch from main
-- Pushes code to GitHub
-- Creates GitHub PR
-- Sends Slack notification
+- 🔍 Detects vulnerabilities
+- 🔧 Fixes them
+- 🌳 Creates new branch from main
+- 📤 Pushes code to GitHub
+- 🔗 Creates GitHub PR
 
-**Time:** 3-5 minutes  
-**Output:** 2-3 GitHub PRs created + Slack notification sent
-
----
-
-### 🔍 Scan Only (No Changes)
-```bash
-fix-security-issues --scan
-```
-Just finds issues, doesn't fix anything
-
----
-
-### 🔧 Fix Only (No PR)
-```bash
-fix-security-issues --fix
-```
-Fixes code locally but doesn't create branch/PR
-
----
-
-### 🔗 Create PRs for Existing Fixes
-```bash
-fix-security-issues --create-prs
-```
-Creates GitHub PRs for already-fixed issues
-
----
-
-### 🧠 Manual AI Analysis
-```bash
-fix-security-issues --manual SEC-001
-```
-Send specific issue to Claude for detailed AI analysis
-
----
-
-### 📊 Generate Report
-```bash
-fix-security-issues --report
-```
-Sends security statistics report to Slack
+**Time:** 2-3 minutes  
+**Output:** GitHub PR created automatically
 
 ## Configuration
 
