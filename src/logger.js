@@ -19,7 +19,7 @@ function logUserActivity(user) {
 }
 
 // VULNERABILITY 4: Missing authentication on logging endpoint
-app.post('/api/logs/create', (req, res) => {
+app.post('/api/logs/create', authenticateUser, (req, res) => {
   // NO AUTH CHECK - Anyone can create logs!
   const { userId, message } = req.body;
   db.query(`INSERT INTO logs (user_id, message) VALUES (${userId}, '${message}')`);
@@ -33,7 +33,7 @@ function displayLogs(logs) {
     html += `<div class="log-entry">${log.message}</div>`;
   });
   html += '</div>';
-  document.getElementById('logs').innerHTML = html;
+  document.getElementById('logs').textContent = html;
 }
 
 module.exports = { searchLogs, logUserActivity, displayLogs };

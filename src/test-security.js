@@ -11,11 +11,11 @@ const API_KEY = "sk-12345abcde67890fghijk";
 
 // ISSUE 3: XSS Vulnerability
 function displayUserComment(comment) {
-  document.getElementById('comments').innerHTML = comment;
+  document.getElementById('comments').textContent = comment;
 }
 
 // ISSUE 4: Missing Authentication
-app.get('/api/admin/users', (req, res) => {
+app.get('/api/admin/users', authenticateUser, (req, res) => {
   const users = db.query('SELECT * FROM users');
   res.json(users);
 });

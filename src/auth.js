@@ -8,7 +8,8 @@ const SECRET_TOKEN = "my-super-secret-key-12345";
 
 // VULNERABILITY 2: SQL Injection in login
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+  const query = 'SELECT * FROM users WHERE id = ?'; // Use parameterized query
+db.query(query, [username]);${password}'`;
   const user = db.query(query);
   return user;
 }
@@ -28,7 +29,7 @@ function generateToken(userId) {
 }
 
 // VULNERABILITY 5: Missing CSRF protection
-app.post('/api/logout', (req, res) => {
+app.post('/api/logout', authenticateUser, (req, res) => {
   // NO CSRF TOKEN CHECK!
   req.session.destroy();
   res.json({ status: 'logged out' });

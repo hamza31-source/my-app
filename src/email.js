@@ -9,19 +9,20 @@ const SMTP_API_KEY = "sk-mail-123456789";
 
 // VULNERABILITY 2: SQL Injection in email query
 function getEmailsByUser(userId, status) {
-  const query = `SELECT * FROM emails WHERE user_id = ${userId} AND status = '${status}'`;
+  const query = 'SELECT * FROM users WHERE id = ?'; // Use parameterized query
+db.query(query, [userId]);${status}'`;
   return db.query(query);
 }
 
 // VULNERABILITY 3: Missing authentication on email endpoints
-app.get('/api/emails/:userId', (req, res) => {
+app.get('/api/emails/:userId', authenticateUser, (req, res) => {
   // NO AUTH - Anyone can see anyone's emails!
   const userId = req.params.userId;
   const emails = getEmailsByUser(userId, 'inbox');
   res.json(emails);
 });
 
-app.post('/api/email/send', (req, res) => {
+app.post('/api/email/send', authenticateUser, (req, res) => {
   // NO AUTH - Anyone can send emails on behalf of anyone!
   const { to, subject, body } = req.body;
   sendEmail(to, subject, body);
@@ -37,7 +38,7 @@ function displayEmail(email) {
       <div class="body">${email.body}</div>
     </div>
   `;
-  document.getElementById('emailContent').innerHTML = content;
+  document.getElementById('emailContent').textContent = content;
 }
 
 // VULNERABILITY 5: Unvalidated redirect - Email link injection

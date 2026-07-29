@@ -7,10 +7,10 @@ const path = require('path');
 
 // VULNERABILITY 1: Hardcoded file path and credentials
 const UPLOAD_DIR = "/var/www/uploads";
-const AWS_SECRET = "AKIA2EXAMPLE1234567890";
+const AWS_SECRET = process.env.SECRET;
 
 // VULNERABILITY 2: Missing file validation - Path traversal vulnerability
-app.post('/api/upload', (req, res) => {
+app.post('/api/upload', authenticateUser, (req, res) => {
   // NO AUTH CHECK!
   const filename = req.body.filename;
   const filepath = path.join(UPLOAD_DIR, filename); // Vulnerable to ../../../ attacks
@@ -31,7 +31,7 @@ function displayFileList(files) {
     html += `<li>${file.originalName} - ${file.description}</li>`;
   });
   html += '</ul>';
-  document.getElementById('fileList').innerHTML = html;
+  document.getElementById('fileList').textContent = html;
 }
 
 // VULNERABILITY 5: Hardcoded encryption key
