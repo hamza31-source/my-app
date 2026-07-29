@@ -108,12 +108,19 @@ class GitHubIntegration {
     const labels = `security,${issue.detection_type}-fix`;
 
     try {
+      // Create environment with GitHub token for gh CLI
+      const env = { ...process.env, GH_TOKEN: this.token };
+
       // Using GitHub CLI (gh) if available
       const ghCommand = `gh pr create --base ${this.baseBranch} --head ${branchName} --title "${title}" --body "${body}" --label "${labels}"`;
+
+      console.log(`📝 Creating PR: ${title}`);
 
       const output = execSync(ghCommand, {
         cwd: this.projectRoot,
         encoding: "utf-8",
+        env: env,
+        stdio: ["pipe", "pipe", "pipe"]
       });
 
       // Extract PR number from output
@@ -124,7 +131,9 @@ class GitHubIntegration {
       const urlMatch = output.match(/(https:\/\/github\.com\/[^\s]+)/);
       const prUrl = urlMatch ? urlMatch[1] : null;
 
-      console.log(`✓ Pull request created: #${prNumber}`);
+      if (prNumber) {
+        console.log(`✓ Pull request created: #${prNumber}\n  ${prUrl}`);
+      }
 
       return {
         number: prNumber,
@@ -132,7 +141,10 @@ class GitHubIntegration {
         title,
       };
     } catch (error) {
-      console.error(`Failed to create pull request: ${error.message}`);
+      console.error(`❌ Failed to create pull request: ${error.message}`);
+      if (error.stderr) {
+        console.error(`Error details: ${error.stderr}`);
+      }
       throw error;
     }
   }
