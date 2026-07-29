@@ -2,79 +2,205 @@
 
 Automated security vulnerability detection, fixing, and reporting for the my-app project.
 
-## Invocation
+## Quick Start
 
 ```bash
-/fix-security-issues [options]
+fix-security-issues --all
 ```
 
-## Options
+This **automatically**:
+1. 🔍 Detects all security issues in your code
+2. 🔧 Fixes them automatically
+3. 🌳 Creates a new branch from `main`
+4. 📤 Pushes code to GitHub
+5. 🔗 Creates a GitHub PR
+6. 💬 Sends Slack notification
 
-- `--scan` - Scan project for security issues and update security-issues.json
-- `--fix` - Fix detected security issues automatically
-- `--manual <issue-id>` - Manually fix a specific issue with AI analysis
-- `--report` - Generate security report and send to Slack
-- `--create-prs` - Create pull requests for all fixed issues
-- `--all` - Run complete workflow (scan → fix → create PRs → report)
+---
 
-## Workflow Steps
+## Complete Workflow
 
-### 1. Security Scanning
-- Pattern matching for common vulnerabilities
-- Dependency vulnerability checks
-- Code analysis for insecure patterns
-- Results saved to `security-issues.json`
+When you run:
 
-### 2. Automatic Fixing
-Automatically fixes these patterns:
-- **SQL Injection**: Converts to parameterized queries
-- **XSS Vulnerabilities**: Changes innerHTML to textContent
-- **Hardcoded Secrets**: Moves to environment variables
-- **Vulnerable Dependencies**: Updates package.json versions
-- **Missing Authentication**: Adds auth middleware
-
-### 3. Pull Request Creation
-- Creates feature branch `security/fix-{issue-id}`
-- Commits fixes with detailed message
-- Creates PR with description linking to issue
-- Adds labels: `security`, `auto-fix` or `manual-fix`
-
-### 4. Slack Notification
-Sends to configured webhook:
-```
-🔒 Security Fix: {vulnerability_type}
-Issue: {title}
-Files: {affected_files}
-PR: {pr_url}
-Status: Fixed by {detection_type}
+```bash
+fix-security-issues --all
 ```
 
-### 5. GitHub PR Integration
-- PR includes:
-  - Vulnerability description
-  - Fix explanation
-  - Before/after code snippets
+### Step 1: Scan
+- Scans all `.js`, `.ts`, `.jsx`, `.tsx` files
+- Detects vulnerabilities (SQL injection, XSS, hardcoded secrets, etc.)
+- Saves results to `security-issues.json`
+
+### Step 2: Auto-Fix
+- Applies fix templates automatically
+- Modifies vulnerable code files locally
+- Follows security best practices
+
+### Step 3: Create Branch
+- Creates new branch: `security/fix-{type}-{id}` from `main`
+- Example: `security/fix-sql-injection-SEC-001`
+- Ensures main branch stays clean
+
+### Step 4: Commit & Push
+- Stages all fixed files
+- Creates commit with security fix message
+- Pushes branch to GitHub
+
+### Step 5: Create GitHub PR
+- Creates pull request on GitHub
+- Adds labels: `security`, `auto-fix`
+- Includes:
+  - Vulnerability details
+  - Before/after code comparison
+  - Security guidelines
+  - PR link: `https://github.com/YOUR_OWNER/my-app/pull/XXX`
+
+### Step 6: Slack Notification
+- Sends message to `#security` channel
+- Includes PR link for quick review
+- Shows issue details and fix status
+
+---
+
+## Commands
+
+- `fix-security-issues --scan` - Scan only (no fixes, no PR)
+- `fix-security-issues --fix` - Fix issues locally (no PR)
+- `fix-security-issues --create-prs` - Create PRs for fixed issues
+- `fix-security-issues --all` - **Full workflow** (scan + fix + PR + notify) ⭐
+- `fix-security-issues --manual <issue-id>` - AI-powered analysis for complex issue
+- `fix-security-issues --report` - Generate security report
+
+## What Gets Fixed Automatically
+
+The system automatically detects and fixes:
+
+| Issue Type | Detection | Fix |
+|-----------|-----------|-----|
+| **SQL Injection** | `SELECT * FROM users WHERE id = ${id}` | Convert to parameterized queries |
+| **XSS Vulnerability** | `.innerHTML = userInput` | Change to `.textContent` |
+| **Hardcoded Secrets** | `const API_KEY = "sk-..."` | Move to `process.env.API_KEY` |
+| **Vulnerable Packages** | Old versions in package.json | Update to safe versions |
+| **Missing Authentication** | `app.get('/api/users', (req, res) => {` | Add `authenticateUser` middleware |
+
+## Full Workflow Details
+
+### 1️⃣ Scan Phase
+```
+Your Code → Pattern Matcher → Finds Issues → security-issues.json
+```
+- Scans all project files
+- Matches against 5 vulnerability patterns
+- Creates issue records with ID, severity, location
+
+### 2️⃣ Fix Phase
+```
+Vulnerable Code → Apply Template Fix → Fixed Code (local)
+```
+- Applies pre-built fix templates
+- Maintains code style
+- Follows security best practices
+- NO changes committed yet
+
+### 3️⃣ Branch Phase
+```
+main branch → Create new branch → security/fix-{type}-{id}
+```
+- Creates feature branch from main
+- Keeps main clean
+- Branch ready for PR
+
+### 4️⃣ Commit & Push Phase
+```
+Fixed Files → git add → git commit → git push origin branch
+```
+- Stages all modified files
+- Creates commit with security message
+- Pushes to GitHub
+- Branch now visible on GitHub
+
+### 5️⃣ GitHub PR Phase
+```
+GitHub API → Create Pull Request → PR #500 Created
+```
+- Opens PR from feature branch to main
+- Adds labels: `security`, `auto-fix`
+- Includes detailed description:
+  - What was vulnerable
+  - How it was fixed
+  - Before/after code
   - Security guidelines link
-  - Merge requirements check
 
-## Examples
-
-```bash
-# Scan entire project
-/fix-security-issues --scan
-
-# Auto-fix all detected issues
-/fix-security-issues --fix
-
-# Manually analyze and fix issue SEC-002
-/fix-security-issues --manual SEC-002
-
-# Full workflow: scan, fix, create PRs, notify Slack
-/fix-security-issues --all
-
-# Generate and send report
-/fix-security-issues --report
+### 6️⃣ Slack Notification Phase
 ```
+GitHub → Extract PR Info → Send to Slack #security
+```
+Example message:
+```
+✅ Security Fix Applied
+Issue: SEC-001 (SQL Injection)
+File: src/database.js
+Severity: 🔴 CRITICAL
+PR: #500 → Click to Review
+Status: Auto-fixed
+```
+
+## Usage Examples
+
+### ⭐ Full Automated Workflow (Recommended)
+```bash
+fix-security-issues --all
+```
+**Does everything automatically:**
+- Detects issues
+- Fixes them
+- Creates new branch from main
+- Pushes code to GitHub
+- Creates GitHub PR
+- Sends Slack notification
+
+**Time:** 3-5 minutes  
+**Output:** 2-3 GitHub PRs created + Slack notification sent
+
+---
+
+### 🔍 Scan Only (No Changes)
+```bash
+fix-security-issues --scan
+```
+Just finds issues, doesn't fix anything
+
+---
+
+### 🔧 Fix Only (No PR)
+```bash
+fix-security-issues --fix
+```
+Fixes code locally but doesn't create branch/PR
+
+---
+
+### 🔗 Create PRs for Existing Fixes
+```bash
+fix-security-issues --create-prs
+```
+Creates GitHub PRs for already-fixed issues
+
+---
+
+### 🧠 Manual AI Analysis
+```bash
+fix-security-issues --manual SEC-001
+```
+Send specific issue to Claude for detailed AI analysis
+
+---
+
+### 📊 Generate Report
+```bash
+fix-security-issues --report
+```
+Sends security statistics report to Slack
 
 ## Configuration
 
