@@ -51,13 +51,25 @@ fix-security-issues --all
 - Pushes branch to GitHub
 
 ### Step 5: Create GitHub PR
-- Creates pull request on GitHub
-- Adds labels: `security`, `auto-fix`
+- Creates pull request on GitHub with comprehensive description
 - Includes:
-  - Vulnerability details
-  - Before/after code comparison
-  - Security guidelines
-  - PR link: `https://github.com/YOUR_OWNER/my-app/pull/XXX`
+  - Vulnerability details and severity levels
+  - Files affected by each vulnerability
+  - Actions taken to fix issues
+  - Testing checklist
+
+### Step 6: Add PR Comment ✨ NEW
+- Claude adds detailed comment explaining each issue
+- Shows **what security problem** each vulnerability causes
+- Explains **how it was fixed**
+- Links to security best practices
+- Helps reviewers understand the changes
+
+### Step 7: Send Slack Notification ✨ NEW  
+- Sends formatted message to Slack webhook (if configured)
+- Includes issue summary with severity indicators
+- Provides direct clickable link to PR
+- **Auto-skips if webhook not configured** - no errors!
 
 
 ---
@@ -149,28 +161,81 @@ When you type `/fix-security-issues`, Claude will:
 **Step 1: Scan**
 - Analyze all `.js` files in `src/`
 - Detect: SQL Injection, XSS, hardcoded secrets, missing auth
+- Count and categorize issues by severity
 
 **Step 2: Fix**
 - Apply security fixes automatically to vulnerable code
-- Update files locally
+- Update files locally with proper fixes
 
 **Step 3: Git Workflow**
 - Create new branch: `security/fix-vulnerabilities-{timestamp}`
 - Stage all fixed files
 - Commit with message: `Security: Fix N vulnerabilities`
 - Push to GitHub
-- Create PR with details
+
+**Step 4: Create GitHub PR**
+- Create PR with comprehensive description
+- Include issue type, severity, and files affected
+- Detail the fixes applied and best practices
+
+**Step 5: Add PR Comment** ✨ NEW
+- Add detailed comment explaining each issue found
+- Show what security problem it causes
+- Explain how it was fixed
+- Link to security best practices
+
+**Step 6: Send Slack Notification** ✨ NEW
+- Send formatted message to Slack webhook
+- Include issue summary with severity indicators
+- Provide direct link to PR for quick review
+- **Note:** Skips automatically if `SLACK_WEBHOOK_URL` not configured
 
 ## Configuration
 
-Required environment variables in `.env`:
+### Required Environment Variables
+
 ```
 GITHUB_TOKEN=your-personal-access-token
 GITHUB_OWNER=your-github-org
 GITHUB_REPO=my-app
 ```
 
-Status: ✅ GITHUB_TOKEN is configured in your local `.env` (not committed)
+Status: ✅ GITHUB_TOKEN is configured
+
+### Optional: Slack Integration
+
+```
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+```
+
+**What happens:**
+- ✅ If configured: PR notification sent to Slack with issue summary and PR link
+- ⏭️ If not configured: Skill automatically skips this step (no errors)
+
+---
+
+## What Gets Added to Your PR
+
+### PR Description Includes:
+- Issue type and count
+- Affected files
+- Brief description of each vulnerability
+- Actions taken (fixes applied)
+- Testing checklist
+- Security best practices applied
+
+### PR Comment Includes:
+- Detailed explanation of **each issue found**
+- **Why it's a security problem** (e.g., SQL Injection allows unauthorized database access)
+- **How it was fixed** (e.g., Changed to parameterized queries)
+- **Security impact** (severity level)
+- Timestamp and attribution to Claude Security Skill
+
+### Slack Message Includes:
+- Total number of vulnerabilities fixed
+- Issues grouped by type with severity indicators
+- Direct link to PR for quick review
+- Only sent if webhook is configured
 
 
 ## Process Details
