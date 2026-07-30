@@ -31,7 +31,7 @@ function displayFileList(files) {
     html += `<li>${file.originalName} - ${file.description}</li>`;
   });
   html += '</ul>';
-  document.getElementById('fileList').innerHTML = html;
+  document.getElementById('fileList').textContent = html;
 }
 
 // VULNERABILITY 5: Hardcoded encryption key

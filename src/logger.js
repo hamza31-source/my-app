@@ -33,7 +33,7 @@ function displayLogs(logs) {
     html += `<div class="log-entry">${log.message}</div>`;
   });
   html += '</div>';
-  document.getElementById('logs').innerHTML = html;
+  document.getElementById('logs').textContent = html;
 }
 
 module.exports = { searchLogs, logUserActivity, displayLogs };

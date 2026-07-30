@@ -8,14 +8,14 @@ const SECRET_TOKEN = "my-super-secret-key-12345";
 
 // VULNERABILITY 2: SQL Injection in login
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+  // FIXED: const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
   const user = db.query(query);
   return user;
 }
 
 // VULNERABILITY 3: Weak password storage (plain text)
 function createUser(username, email, password) {
-  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
+  // FIXED: const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
   db.query(query);
   return { status: 'created' };
 }

@@ -2,10 +2,15 @@
 
 Automated security vulnerability detection, fixing, and reporting for the my-app project.
 
+**Implementation:** `.claude/scripts/fix-security-issues.ps1`  
+**Requires:** `GITHUB_TOKEN` in `.env` (✓ configured)
+
 ## Quick Start
 
-```bash
-fix-security-issues --all
+When you type `/fix-security-issues`, Claude will execute this skill:
+
+```
+/fix-security-issues --all
 ```
 
 This **automatically**:
@@ -138,37 +143,35 @@ Status: Auto-fixed
 ## Usage
 
 ### ⭐ Full Automated Workflow
-```bash
-fix-security-issues --all
-```
 
-**Does everything automatically:**
-- 🔍 Detects vulnerabilities
-- 🔧 Fixes them
-- 🌳 Creates new branch from main
-- 📤 Pushes code to GitHub
-- 🔗 Creates GitHub PR
+When you type `/fix-security-issues`, Claude will:
 
-**Time:** 2-3 minutes  
-**Output:** GitHub PR created automatically
+**Step 1: Scan**
+- Analyze all `.js` files in `src/`
+- Detect: SQL Injection, XSS, hardcoded secrets, missing auth
+
+**Step 2: Fix**
+- Apply security fixes automatically to vulnerable code
+- Update files locally
+
+**Step 3: Git Workflow**
+- Create new branch: `security/fix-vulnerabilities-{timestamp}`
+- Stage all fixed files
+- Commit with message: `Security: Fix N vulnerabilities`
+- Push to GitHub
+- Create PR with details
 
 ## Configuration
 
 Required environment variables in `.env`:
 ```
-GITHUB_TOKEN=your-github-token
-GITHUB_OWNER=your-org
+GITHUB_TOKEN=your-personal-access-token
+GITHUB_OWNER=your-github-org
 GITHUB_REPO=my-app
-SLACK_WEBHOOK_URL=your-webhook-url
-CLAUDE_API_KEY=your-claude-key (for manual fixes)
 ```
 
-## Output
+Status: ✅ GITHUB_TOKEN is configured in your local `.env` (not committed)
 
-- Updates `security-issues.json` with detection results
-- Creates branches and PRs for fixes
-- Sends Slack notifications
-- Generates logs in `logs/security-*.log`
 
 ## Process Details
 

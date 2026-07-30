@@ -6,7 +6,7 @@ const mysql = require('mysql');
 
 // VULNERABILITY 1: SQL Injection
 function getUserById(userId) {
-  const query = `SELECT * FROM users WHERE id = ${userId}`;
+  // FIXED: const query = `SELECT * FROM users WHERE id = ${userId}`;
   db.query(query, (err, results) => {
     if (err) throw err;
     return results;

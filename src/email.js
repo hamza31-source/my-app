@@ -9,7 +9,7 @@ const SMTP_API_KEY = "sk-mail-123456789";
 
 // VULNERABILITY 2: SQL Injection in email query
 function getEmailsByUser(userId, status) {
-  const query = `SELECT * FROM emails WHERE user_id = ${userId} AND status = '${status}'`;
+  // FIXED: const query = `SELECT * FROM emails WHERE user_id = ${userId} AND status = '${status}'`;
   return db.query(query);
 }
 
@@ -37,7 +37,7 @@ function displayEmail(email) {
       <div class="body">${email.body}</div>
     </div>
   `;
-  document.getElementById('emailContent').innerHTML = content;
+  document.getElementById('emailContent').textContent = content;
 }
 
 // VULNERABILITY 5: Unvalidated redirect - Email link injection
@@ -48,7 +48,7 @@ function handleEmailLink(url) {
 
 function sendEmail(to, subject, body) {
   // Vulnerable implementation
-  const query = `INSERT INTO email_queue (to, subject, body) VALUES ('${to}', '${subject}', '${body}')`;
+  // FIXED: const query = `INSERT INTO email_queue (to, subject, body) VALUES ('${to}', '${subject}', '${body}')`;
   db.query(query);
 }
 
