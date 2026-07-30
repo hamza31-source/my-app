@@ -1,30 +1,25 @@
 /**
- * API routes with security vulnerabilities
+ * API routes
  */
 
 const express = require('express');
 const app = express();
 
-// VULNERABILITY 5: Missing Authentication
 app.get('/api/users', authenticateUser, (req, res) => {
-  // NO AUTHENTICATION CHECK!
   const users = db.query('SELECT * FROM users');
   res.json(users);
 });
 
-// VULNERABILITY 6: Missing Authentication on sensitive endpoint
-app.post('/api/admin/delete-user/:id', authenticateUser, (req, res) => {
-  // NO AUTHENTICATION OR AUTHORIZATION!
+app.post('/api/admin/delete-user/:id', authenticateUser, requireAdmin, (req, res) => {
   const userId = req.params.id;
-  db.query(`DELETE FROM users WHERE id = ${userId}`);
+  db.query('DELETE FROM users WHERE id = ?', [userId]);
   res.json({ message: 'User deleted' });
 });
 
-// VULNERABILITY 7: SQL Injection in API
 app.get('/api/search', authenticateUser, (req, res) => {
   const searchTerm = req.query.q;
-  const query = `SELECT * FROM products WHERE name LIKE '%${searchTerm}%'`;
-  const results = db.query(query);
+  const query = 'SELECT * FROM products WHERE name LIKE ?';
+  const results = db.query(query, [`%${searchTerm}%`]);
   res.json(results);
 });
 
@@ -38,6 +33,13 @@ function authenticateUser(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   // verify token...
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   next();
 }
 

@@ -1,55 +1,69 @@
 /**
- * Email module with security vulnerabilities
+ * Email module
  */
 
-// VULNERABILITY 1: Hardcoded email credentials
-const SMTP_USER = "admin@company.com";
-const SMTP_PASSWORD = "P@ssw0rd123!";
-const SMTP_API_KEY = "sk-mail-123456789";
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
+const SMTP_API_KEY = process.env.SMTP_API_KEY;
 
-// VULNERABILITY 2: SQL Injection in email query
 function getEmailsByUser(userId, status) {
-  const query = `SELECT * FROM emails WHERE user_id = ${userId} AND status = '${status}'`;
-  return db.query(query);
+  const query = 'SELECT * FROM emails WHERE user_id = ? AND status = ?';
+  return db.query(query, [userId, status]);
 }
 
-// VULNERABILITY 3: Missing authentication on email endpoints
-app.get('/api/emails/:userId', (req, res) => {
-  // NO AUTH - Anyone can see anyone's emails!
+app.get('/api/emails/:userId', authenticateUser, (req, res) => {
   const userId = req.params.userId;
+  if (String(req.user.id) !== String(userId)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   const emails = getEmailsByUser(userId, 'inbox');
   res.json(emails);
 });
 
-app.post('/api/email/send', (req, res) => {
-  // NO AUTH - Anyone can send emails on behalf of anyone!
+app.post('/api/email/send', authenticateUser, (req, res) => {
   const { to, subject, body } = req.body;
   sendEmail(to, subject, body);
   res.json({ status: 'sent' });
 });
 
-// VULNERABILITY 4: XSS in email display
 function displayEmail(email) {
-  const content = `
-    <div class="email">
-      <h2>${email.subject}</h2>
-      <p>From: ${email.from}</p>
-      <div class="body">${email.body}</div>
-    </div>
-  `;
-  document.getElementById('emailContent').innerHTML = content;
+  const container = document.getElementById('emailContent');
+  container.replaceChildren();
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'email';
+
+  const subject = document.createElement('h2');
+  subject.textContent = email.subject;
+
+  const from = document.createElement('p');
+  from.textContent = `From: ${email.from}`;
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  body.textContent = email.body;
+
+  wrapper.append(subject, from, body);
+  container.appendChild(wrapper);
 }
 
-// VULNERABILITY 5: Unvalidated redirect - Email link injection
+const ALLOWED_REDIRECT_HOSTS = new Set(['mail.company.com', 'company.com']);
+
 function handleEmailLink(url) {
-  // No validation - user can redirect to malicious site
-  window.location.href = url;
+  try {
+    const parsed = new URL(url, window.location.origin);
+    if (parsed.origin !== window.location.origin && !ALLOWED_REDIRECT_HOSTS.has(parsed.hostname)) {
+      throw new Error('Untrusted redirect target');
+    }
+    window.location.href = parsed.href;
+  } catch (e) {
+    console.error('Blocked untrusted email link:', url);
+  }
 }
 
 function sendEmail(to, subject, body) {
-  // Vulnerable implementation
-  const query = `INSERT INTO email_queue (to, subject, body) VALUES ('${to}', '${subject}', '${body}')`;
-  db.query(query);
+  const query = 'INSERT INTO email_queue (to, subject, body) VALUES (?, ?, ?)';
+  db.query(query, [to, subject, body]);
 }
 
 module.exports = { getEmailsByUser, displayEmail, handleEmailLink, sendEmail };

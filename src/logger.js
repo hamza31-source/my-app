@@ -1,39 +1,39 @@
 /**
- * Logging module with security vulnerabilities
+ * Logging module
  */
 
-// VULNERABILITY 1: Hardcoded API credentials
-const LOG_API_KEY = "log-key-sk-12345678901234";
-const LOG_ENDPOINT = "https://api.logging.com/v1/logs?token=secret-xyz";
+const LOG_API_KEY = process.env.LOG_API_KEY;
+const LOG_ENDPOINT = process.env.LOG_ENDPOINT;
 
-// VULNERABILITY 2: SQL Injection in log query
 function searchLogs(userId, query) {
-  const sql = `SELECT * FROM logs WHERE user_id = ${userId} AND message LIKE '%${query}%'`;
-  return db.query(sql);
+  const sql = 'SELECT * FROM logs WHERE user_id = ? AND message LIKE ?';
+  return db.query(sql, [userId, `%${query}%`]);
 }
 
-// VULNERABILITY 3: Exposing sensitive data in logs
 function logUserActivity(user) {
-  const logMessage = `User ${user.id} logged in with password: ${user.password}`;
-  console.log(logMessage); // Password exposed in logs!
+  const logMessage = `User ${user.id} logged in`;
+  console.log(logMessage);
 }
 
-// VULNERABILITY 4: Missing authentication on logging endpoint
-app.post('/api/logs/create', (req, res) => {
-  // NO AUTH CHECK - Anyone can create logs!
+app.post('/api/logs/create', authenticateUser, (req, res) => {
   const { userId, message } = req.body;
-  db.query(`INSERT INTO logs (user_id, message) VALUES (${userId}, '${message}')`);
+  db.query('INSERT INTO logs (user_id, message) VALUES (?, ?)', [userId, message]);
   res.json({ status: 'logged' });
 });
 
-// VULNERABILITY 5: XSS in log display
 function displayLogs(logs) {
-  let html = '<div class="logs">';
+  const container = document.getElementById('logs');
+  container.replaceChildren();
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'logs';
   logs.forEach(log => {
-    html += `<div class="log-entry">${log.message}</div>`;
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.textContent = log.message;
+    wrapper.appendChild(entry);
   });
-  html += '</div>';
-  document.getElementById('logs').innerHTML = html;
+  container.appendChild(wrapper);
 }
 
 module.exports = { searchLogs, logUserActivity, displayLogs };

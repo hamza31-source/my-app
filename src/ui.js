@@ -1,29 +1,28 @@
 /**
- * UI module with security vulnerabilities
+ * UI module
  */
 
-// VULNERABILITY 3: XSS Attack
 function displayUserComment(userInput) {
   const commentContainer = document.getElementById('comments');
-  commentContainer.textContent = `<div>${userInput}</div>`;
-  // Vulnerable! User can inject: <img src=x onerror="alert('hacked')">
+  commentContainer.textContent = userInput;
 }
 
-// VULNERABILITY 4: Another XSS
 function updateProfile(userData) {
   const profileDiv = document.querySelector('.profile');
   profileDiv.textContent = userData.bio;
-  // If userData.bio contains: <script>stealCookies()</script>
-  // This will execute the malicious script!
 }
 
 function renderUserData(data) {
   const userElement = document.getElementById('user-info');
-  userElement.textContent = `
-    <h1>${data.name}</h1>
-    <p>${data.description}</p>
-  `;
-  // XSS vulnerable!
+  userElement.replaceChildren();
+
+  const heading = document.createElement('h1');
+  heading.textContent = data.name;
+
+  const description = document.createElement('p');
+  description.textContent = data.description;
+
+  userElement.append(heading, description);
 }
 
 module.exports = {

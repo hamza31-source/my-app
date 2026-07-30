@@ -1,44 +1,44 @@
 /**
- * File upload module with security vulnerabilities
+ * File upload module
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// VULNERABILITY 1: Hardcoded file path and credentials
-const UPLOAD_DIR = "/var/www/uploads";
-const AWS_SECRET = "AKIA2EXAMPLE1234567890";
+const UPLOAD_DIR = process.env.UPLOAD_DIR || "/var/www/uploads";
+const AWS_SECRET = process.env.AWS_SECRET;
 
-// VULNERABILITY 2: Missing file validation - Path traversal vulnerability
-app.post('/api/upload', (req, res) => {
-  // NO AUTH CHECK!
-  const filename = req.body.filename;
-  const filepath = path.join(UPLOAD_DIR, filename); // Vulnerable to ../../../ attacks
+app.post('/api/upload', authenticateUser, (req, res) => {
+  const filename = path.basename(req.body.filename);
+  const filepath = path.join(UPLOAD_DIR, filename);
+  if (!filepath.startsWith(path.resolve(UPLOAD_DIR))) {
+    return res.status(400).json({ error: 'Invalid filename' });
+  }
   fs.writeFileSync(filepath, req.body.content);
   res.json({ status: 'uploaded' });
 });
 
-// VULNERABILITY 3: SQL Injection when storing file metadata
 function saveFileMetadata(userId, filename) {
-  const query = `INSERT INTO files (user_id, filename) VALUES (${userId}, '${filename}')`;
-  db.query(query);
+  const query = 'INSERT INTO files (user_id, filename) VALUES (?, ?)';
+  db.query(query, [userId, filename]);
 }
 
-// VULNERABILITY 4: Exposing file content via XSS
 function displayFileList(files) {
-  let html = '<ul>';
+  const list = document.getElementById('fileList');
+  list.replaceChildren();
+
+  const ul = document.createElement('ul');
   files.forEach(file => {
-    html += `<li>${file.originalName} - ${file.description}</li>`;
+    const li = document.createElement('li');
+    li.textContent = `${file.originalName} - ${file.description}`;
+    ul.appendChild(li);
   });
-  html += '</ul>';
-  document.getElementById('fileList').innerHTML = html;
+  list.appendChild(ul);
 }
 
-// VULNERABILITY 5: Hardcoded encryption key
-const ENCRYPTION_KEY = "my-secret-key-12345-do-not-use";
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
 function encryptFile(content) {
-  // Uses hardcoded key for encryption - not secure!
   return crypto.encrypt(content, ENCRYPTION_KEY);
 }
 

@@ -1,35 +1,42 @@
 /**
- * Authentication module with security vulnerabilities
+ * Authentication module
  */
 
-// VULNERABILITY 1: Hardcoded admin password
-const ADMIN_PASSWORD = "admin@12345";
-const SECRET_TOKEN = "my-super-secret-key-12345";
+const bcrypt = require('bcrypt');
 
-// VULNERABILITY 2: SQL Injection in login
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const SECRET_TOKEN = process.env.SECRET_TOKEN;
+
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  const user = db.query(query);
+  const query = 'SELECT * FROM users WHERE username = ?';
+  const user = db.query(query, [username]);
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return null;
+  }
   return user;
 }
 
-// VULNERABILITY 3: Weak password storage (plain text)
-function createUser(username, email, password) {
-  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
-  db.query(query);
+async function createUser(username, email, password) {
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(query, [username, email, hashedPassword]);
   return { status: 'created' };
 }
 
-// VULNERABILITY 4: Token exposed in logs
 function generateToken(userId) {
   const token = SECRET_TOKEN + userId;
-  console.log(`Token generated: ${token}`); // Logged in plain text!
   return token;
 }
 
-// VULNERABILITY 5: Missing CSRF protection
-app.post('/api/logout', (req, res) => {
-  // NO CSRF TOKEN CHECK!
+function csrfProtection(req, res, next) {
+  const token = req.headers['x-csrf-token'];
+  if (!token || token !== req.session.csrfToken) {
+    return res.status(403).json({ error: 'Invalid CSRF token' });
+  }
+  next();
+}
+
+app.post('/api/logout', csrfProtection, (req, res) => {
   req.session.destroy();
   res.json({ status: 'logged out' });
 });
