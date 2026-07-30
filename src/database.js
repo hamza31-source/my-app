@@ -1,21 +1,29 @@
 /**
- * Database module with intentional vulnerabilities for testing
+ * Database module with TEST security vulnerabilities
  */
 
 const mysql = require('mysql');
 
-// VULNERABILITY 1: SQL Injection
+// TEST VULNERABILITY 1: Hardcoded API Key
+const API_KEY = "sk-1234567890abcdefghijklmnop";
+
+// TEST VULNERABILITY 2: Hardcoded Database Password
+const DB_PASSWORD = "MyDatabasePassword123!";
+
+// TEST VULNERABILITY 3: SQL Injection
 function getUserById(userId) {
-  // FIXED: // FIXED: const query = `SELECT * FROM users WHERE id = ${userId}`;
+  const query = `SELECT * FROM users WHERE id = ${userId}`;
   db.query(query, (err, results) => {
     if (err) throw err;
     return results;
   });
 }
 
-// VULNERABILITY 2: Hardcoded Secret
-const API_KEY = "sk-1234567890abcdefghijklmnop";
-const DB_PASSWORD = process.env.PASSWORD;
+// TEST VULNERABILITY 4: SQL Injection in login
+function loginUser(email, password) {
+  const query = `SELECT * FROM users WHERE email = '${email}' AND password = '${password}'`;
+  return db.query(query);
+}
 
 function connectToDatabase() {
   const connection = mysql.createConnection({
@@ -29,5 +37,6 @@ function connectToDatabase() {
 
 module.exports = {
   getUserById,
+  loginUser,
   connectToDatabase
 };

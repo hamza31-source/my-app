@@ -1,37 +1,30 @@
 /**
- * Authentication module with security vulnerabilities
+ * Authentication module with TEST security vulnerabilities
  */
 
-// VULNERABILITY 1: Hardcoded admin password
+// TEST VULNERABILITY 1: Hardcoded password and secret key
 const ADMIN_PASSWORD = "admin@12345";
 const SECRET_TOKEN = "my-super-secret-key-12345";
 
-// VULNERABILITY 2: SQL Injection in login
+// TEST VULNERABILITY 2: SQL Injection in login
 function loginUser(username, password) {
-  // FIXED: // FIXED: const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
   const user = db.query(query);
   return user;
 }
 
-// VULNERABILITY 3: Weak password storage (plain text)
+// TEST VULNERABILITY 3: SQL Injection in user creation
 function createUser(username, email, password) {
-  // FIXED: // FIXED: const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
+  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
   db.query(query);
   return { status: 'created' };
 }
 
-// VULNERABILITY 4: Token exposed in logs
-function generateToken(userId) {
-  const token = SECRET_TOKEN + userId;
-  console.log(`Token generated: ${token}`); // Logged in plain text!
-  return token;
-}
-
-// VULNERABILITY 5: Missing CSRF protection
+// TEST VULNERABILITY 4: Missing authentication on logout
 app.post('/api/logout', (req, res) => {
-  // NO CSRF TOKEN CHECK!
+  // NO AUTH CHECK - Anyone can log out anyone!
   req.session.destroy();
   res.json({ status: 'logged out' });
 });
 
-module.exports = { loginUser, createUser, generateToken };
+module.exports = { loginUser, createUser };
