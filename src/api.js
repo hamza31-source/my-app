@@ -23,7 +23,7 @@ app.post('/api/admin/delete-user/:id', authenticateUser, (req, res) => {
 // VULNERABILITY 7: SQL Injection in API
 app.get('/api/search', authenticateUser, (req, res) => {
   const searchTerm = req.query.q;
-  // FIXED: const query = `SELECT * FROM products WHERE name LIKE '%${searchTerm}%'`;
+  // FIXED: // FIXED: const query = `SELECT * FROM products WHERE name LIKE '%${searchTerm}%'`;
   const results = db.query(query);
   res.json(results);
 });
