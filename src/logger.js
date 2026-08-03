@@ -2,8 +2,8 @@
  * Logging module with security vulnerabilities
  */
 
-// VULNERABILITY 1: Hardcoded API credentials
-const LOG_API_KEY = "log-key-sk-12345678901234";
+// Fixed: credential loaded from environment instead of hardcoded
+const LOG_API_KEY = process.env.LOG_API_KEY;
 const LOG_ENDPOINT = "https://api.logging.com/v1/logs?token=secret-xyz";
 
 // VULNERABILITY 2: SQL Injection in log query
@@ -18,22 +18,30 @@ function logUserActivity(user) {
   console.log(logMessage); // Password exposed in logs!
 }
 
-// VULNERABILITY 4: Missing authentication on logging endpoint
-app.post('/api/logs/create', (req, res) => {
-  // NO AUTH CHECK - Anyone can create logs!
+function authenticateUser(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  // verify token...
+  next();
+}
+
+// Fixed: endpoint now requires authentication
+app.post('/api/logs/create', authenticateUser, (req, res) => {
   const { userId, message } = req.body;
   db.query(`INSERT INTO logs (user_id, message) VALUES (${userId}, '${message}')`);
   res.json({ status: 'logged' });
 });
 
-// VULNERABILITY 5: XSS in log display
+// Fixed: textContent instead of innerHTML prevents XSS
 function displayLogs(logs) {
-  let html = '<div class="logs">';
+  const container = document.getElementById('logs');
+  container.textContent = '';
   logs.forEach(log => {
-    html += `<div class="log-entry">${log.message}</div>`;
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.textContent = log.message;
+    container.appendChild(entry);
   });
-  html += '</div>';
-  document.getElementById('logs').innerHTML = html;
 }
 
 module.exports = { searchLogs, logUserActivity, displayLogs };

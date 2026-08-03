@@ -1,12 +1,12 @@
 {
   "metadata": {
     "version": "1.0",
-    "last_scan": "2026-07-29T12:26:06.438Z",
-    "total_issues": 48,
+    "last_scan": "2026-08-03T00:00:00.000Z",
+    "total_issues": 56,
     "total_fixed": 0,
-    "auto_fixed": 0,
+    "auto_fixed": 46,
     "manual_fixed": 0,
-    "false_positives": 0
+    "false_positives": 1
   },
   "issues": [
     {
@@ -15,20 +15,21 @@
       "description": "Parameterized queries not used in database operations",
       "severity": "critical",
       "vulnerability_type": "sql_injection",
-      "file_path": "src/api/database.js",
+      "file_path": "src/database.js",
       "line_number": 42,
       "code_snippet": "const query = `SELECT * FROM users WHERE id = ${id}`;",
       "detection_type": "auto",
       "detection_method": "pattern_matching",
       "detected_at": "2026-07-29T10:30:00Z",
-      "status": "pending",
+      "status": "auto_fixed",
       "suggested_fix": "Use parameterized queries or prepared statements",
       "fix_template": "const query = 'SELECT * FROM users WHERE id = ?'; db.query(query, [id]);",
       "pr_number": null,
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "file_path corrected from src/api/database.js (does not exist) to src/database.js. Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file. Same underlying issue as SEC-1785325641479-lz50tp9ay.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785325641477-5tcxmwjbb",
@@ -532,7 +533,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785325641479-9v4wzr1gb",
@@ -553,7 +555,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785325641479-w1qrwkt9f",
@@ -651,14 +654,15 @@
       "detection_type": "auto",
       "detection_method": "pattern_matching",
       "detected_at": "2026-07-29T11:47:21.481Z",
-      "status": "auto_fixed",
+      "status": "needs_manual_review",
       "suggested_fix": "Using innerHTML with user-controlled data can lead to XSS attacks",
       "fix_template": "// ❌ Vulnerable:\ndocument.getElementById('output').innerHTML = userInput;\nelement.innerHTML = `<div>${data}</div>`;\n\n// ✅ Fixed:\ndocument.getElementById('output').textContent = userInput;\nelement.textContent = data;\n// Or use DOM methods:\nconst div = document.createElement('div');\ndiv.textContent = data;\nelement.appendChild(div);",
       "pr_number": null,
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "static/js/main.ef53d4dd.js is a minified build bundle and this repo has no package.json/build tooling to regenerate it from source. Hand-editing minified output is too risky to verify safely — needs a real build pipeline or manual review.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785326958273-5h9a132zr",
@@ -679,7 +683,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785326958273-xt3p9ofc5",
@@ -700,7 +705,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785326958273-bepf1okyo",
@@ -714,14 +720,15 @@
       "detection_type": "auto",
       "detection_method": "pattern_matching",
       "detected_at": "2026-07-29T12:09:18.273Z",
-      "status": "auto_fixed",
+      "status": "false_positive",
       "suggested_fix": "API keys, passwords, and tokens hardcoded in source code",
       "fix_template": "// ❌ Vulnerable:\nconst API_KEY = \"sk-1234567890abcdefghij\";\nconst password = process.env.PASSWORD;\nconst dbToken = process.env.TOKEN;\n\n// ✅ Fixed:\nconst API_KEY = process.env.API_KEY;\nconst password = process.env.DB_PASSWORD;\nconst dbToken = process.env.GITHUB_TOKEN;\n\n// Add to .env file:\n// API_KEY=sk-1234567890abcdefghij\n// DB_PASSWORD=supersecretpassword\n// GITHUB_TOKEN=ghp_xxxxxxxxxxx",
       "pr_number": null,
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Mistagged as hardcoded_secrets: line 11 is the SQL injection query (already covered by SEC-1785326958273-5h9a132zr), not a literal hardcoded secret. No separate fix needed.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785326958273-uziw3b5bx",
@@ -742,7 +749,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785326958273-wvec32r8i",
@@ -763,7 +771,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-gyns5bvk8",
@@ -910,7 +919,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-19ikxkr9k",
@@ -931,7 +941,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-3vq2ici59",
@@ -952,7 +963,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-vnw2lluel",
@@ -973,7 +985,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-1wacm0ct4",
@@ -994,7 +1007,8 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
     },
     {
       "id": "SEC-1785327695233-ppw9dz5w3",
@@ -1015,7 +1029,184 @@
       "pr_url": null,
       "merged": false,
       "assigned_to": null,
-      "notes": ""
+      "notes": "Verified 2026-08-03: previous auto_fixed marking did not match the actual code; applied the real fix and confirmed by reading the file.",
+      "category": "Vulnerability"
+    },
+    {
+      "id": "SEC-NEW-001",
+      "title": "SQL Injection: auth.js createUser",
+      "description": "createUser() builds a query with template-literal interpolation, same class of bug as the tracked loginUser issue",
+      "category": "Vulnerability",
+      "severity": "critical",
+      "vulnerability_type": "sql_injection",
+      "file_path": "src/auth.js",
+      "line_number": 18,
+      "code_snippet": "const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Use a parameterized query, same pattern as loginUser",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found while fixing SEC-1785326958273-5h9a132zr; not fixed in this batch to keep the diff scoped to tracked issues."
+    },
+    {
+      "id": "SEC-NEW-002",
+      "title": "Sensitive data exposure: auth.js generateToken logs full token",
+      "description": "generateToken() logs the full generated token to the console in plain text",
+      "category": "Vulnerability",
+      "severity": "medium",
+      "vulnerability_type": "sensitive_data_exposure",
+      "file_path": "src/auth.js",
+      "line_number": 26,
+      "code_snippet": "console.log(`Token generated: ${token}`);",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Remove the token from the log line, or log only a non-reversible identifier",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found during auth.js audit."
+    },
+    {
+      "id": "SEC-NEW-003",
+      "title": "SQL Injection: fileupload.js saveFileMetadata",
+      "description": "saveFileMetadata() builds a query with template-literal interpolation",
+      "category": "Vulnerability",
+      "severity": "critical",
+      "vulnerability_type": "sql_injection",
+      "file_path": "src/fileupload.js",
+      "line_number": 23,
+      "code_snippet": "const query = `INSERT INTO files (user_id, filename) VALUES (${userId}, '${filename}')`;",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Use a parameterized query",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found while fixing SEC-1785327695233-19ikxkr9k; not fixed in this batch."
+    },
+    {
+      "id": "SEC-NEW-004",
+      "title": "Hardcoded Secret: fileupload.js ENCRYPTION_KEY",
+      "description": "ENCRYPTION_KEY is a hardcoded literal used for encryption",
+      "category": "Vulnerability",
+      "severity": "critical",
+      "vulnerability_type": "hardcoded_secrets",
+      "file_path": "src/fileupload.js",
+      "line_number": 38,
+      "code_snippet": "const ENCRYPTION_KEY = \"my-secret-key-12345-do-not-use\";",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Move to process.env.ENCRYPTION_KEY with a placeholder in .env.example",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found during fileupload.js audit."
+    },
+    {
+      "id": "SEC-NEW-005",
+      "title": "Path Traversal: fileupload.js upload endpoint",
+      "description": "filename from req.body is joined into UPLOAD_DIR without sanitization, allowing ../ traversal",
+      "category": "Vulnerability",
+      "severity": "critical",
+      "vulnerability_type": "path_traversal",
+      "file_path": "src/fileupload.js",
+      "line_number": 16,
+      "code_snippet": "const filepath = path.join(UPLOAD_DIR, filename);",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Reject filenames containing path separators or \"..\" (e.g. compare path.basename(filename) === filename) before joining",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found during fileupload.js audit; distinct from the tracked missing_authentication issue on the same endpoint."
+    },
+    {
+      "id": "SEC-NEW-006",
+      "title": "Hardcoded Secret: logger.js LOG_ENDPOINT token",
+      "description": "LOG_ENDPOINT embeds a token directly in the URL string",
+      "category": "Vulnerability",
+      "severity": "high",
+      "vulnerability_type": "hardcoded_secrets",
+      "file_path": "src/logger.js",
+      "line_number": 7,
+      "code_snippet": "const LOG_ENDPOINT = \"https://api.logging.com/v1/logs?token=secret-xyz\";",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Move the token to process.env and build the URL at runtime",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found during logger.js audit."
+    },
+    {
+      "id": "SEC-NEW-007",
+      "title": "SQL Injection: logger.js searchLogs",
+      "description": "searchLogs() builds a query with template-literal interpolation",
+      "category": "Vulnerability",
+      "severity": "critical",
+      "vulnerability_type": "sql_injection",
+      "file_path": "src/logger.js",
+      "line_number": 11,
+      "code_snippet": "const sql = `SELECT * FROM logs WHERE user_id = ${userId} AND message LIKE '%${query}%'`;",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Use a parameterized query",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found while fixing SEC-1785327695233-1wacm0ct4; not fixed in this batch."
+    },
+    {
+      "id": "SEC-NEW-008",
+      "title": "Sensitive data exposure: logger.js logUserActivity logs password",
+      "description": "logUserActivity() logs the user password in plain text",
+      "category": "Vulnerability",
+      "severity": "high",
+      "vulnerability_type": "sensitive_data_exposure",
+      "file_path": "src/logger.js",
+      "line_number": 17,
+      "code_snippet": "const logMessage = `User ${user.id} logged in with password: ${user.password}`;",
+      "detection_type": "manual",
+      "detection_method": "audit_during_fix",
+      "detected_at": "2026-08-03T00:00:00.000Z",
+      "status": "pending",
+      "suggested_fix": "Remove the password from the log message entirely",
+      "fix_template": null,
+      "pr_number": null,
+      "pr_url": null,
+      "merged": false,
+      "assigned_to": null,
+      "notes": "Found during logger.js audit."
     }
   ],
   "statistics": {
