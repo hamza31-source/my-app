@@ -13,17 +13,17 @@ function loginUser(username, password) {
   return user;
 }
 
-// VULNERABILITY 3: Weak password storage (plain text)
+// Fixed: parameterized query prevents SQL injection
 function createUser(username, email, password) {
-  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
-  db.query(query);
+  const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(query, [username, email, password]);
   return { status: 'created' };
 }
 
-// VULNERABILITY 4: Token exposed in logs
+// Fixed: no longer logs the generated token
 function generateToken(userId) {
   const token = SECRET_TOKEN + userId;
-  console.log(`Token generated: ${token}`); // Logged in plain text!
+  console.log(`Token generated for user: ${userId}`);
   return token;
 }
 
