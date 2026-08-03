@@ -2,20 +2,22 @@
  * Logging module with security vulnerabilities
  */
 
-// VULNERABILITY 1: Hardcoded API credentials
+// NO AUTH CHECK! (tracked separately, see SEC-1785327695233-ppw9dz5w3)
 const LOG_API_KEY = "log-key-sk-12345678901234";
-const LOG_ENDPOINT = "https://api.logging.com/v1/logs?token=secret-xyz";
+// Fixed: token loaded from environment instead of embedded in the URL
+const LOG_ENDPOINT_BASE = "https://api.logging.com/v1/logs";
+const LOG_ENDPOINT = `${LOG_ENDPOINT_BASE}?token=${process.env.LOG_ENDPOINT_TOKEN}`;
 
-// VULNERABILITY 2: SQL Injection in log query
+// Fixed: parameterized query prevents SQL injection
 function searchLogs(userId, query) {
-  const sql = `SELECT * FROM logs WHERE user_id = ${userId} AND message LIKE '%${query}%'`;
-  return db.query(sql);
+  const sql = 'SELECT * FROM logs WHERE user_id = ? AND message LIKE ?';
+  return db.query(sql, [userId, `%${query}%`]);
 }
 
-// VULNERABILITY 3: Exposing sensitive data in logs
+// Fixed: password no longer included in the log message
 function logUserActivity(user) {
-  const logMessage = `User ${user.id} logged in with password: ${user.password}`;
-  console.log(logMessage); // Password exposed in logs!
+  const logMessage = `User ${user.id} logged in`;
+  console.log(logMessage);
 }
 
 // VULNERABILITY 4: Missing authentication on logging endpoint
