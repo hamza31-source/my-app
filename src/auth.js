@@ -2,34 +2,37 @@
  * Authentication module with security vulnerabilities
  */
 
-// VULNERABILITY 1: Hardcoded admin password
-const ADMIN_PASSWORD = "admin@12345";
-const SECRET_TOKEN = "my-super-secret-key-12345";
+// Fixed: secrets loaded from environment instead of hardcoded
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const SECRET_TOKEN = process.env.SECRET_TOKEN;
 
-// VULNERABILITY 2: SQL Injection in login
+// Fixed: parameterized query prevents SQL injection
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  const user = db.query(query);
+  const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+  const user = db.query(query, [username, password]);
   return user;
 }
 
-// VULNERABILITY 3: Weak password storage (plain text)
+// NEEDS MANUAL REVIEW: password is still stored in plain text here.
+// Hashing it requires knowing the real users-table schema (column
+// names, migration path for existing rows), so it isn't safe to
+// auto-fix blind. Tracked as SEC-auth-weak-password-storage.
 function createUser(username, email, password) {
-  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
-  db.query(query);
+  const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(query, [username, email, password]);
   return { status: 'created' };
 }
 
-// VULNERABILITY 4: Token exposed in logs
+// Fixed: token no longer written to logs
 function generateToken(userId) {
   const token = SECRET_TOKEN + userId;
-  console.log(`Token generated: ${token}`); // Logged in plain text!
   return token;
 }
 
-// VULNERABILITY 5: Missing CSRF protection
+// NEEDS MANUAL REVIEW: /api/logout has no CSRF protection. Adding it
+// requires an app-wide CSRF middleware/session decision (e.g. csurf
+// config), not a one-file patch. Tracked as SEC-auth-missing-csrf.
 app.post('/api/logout', (req, res) => {
-  // NO CSRF TOKEN CHECK!
   req.session.destroy();
   res.json({ status: 'logged out' });
 });
