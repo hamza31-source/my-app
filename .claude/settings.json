@@ -134,7 +134,12 @@
       "Bash(npm start:dev)",
       "PowerShell(Get-Process node, npm -ErrorAction SilentlyContinue)",
       "Bash(node add-permission.js)",
-      "Bash(node check-user-permissions.js)"
+      "Bash(node check-user-permissions.js)",
+      "Bash(find / -iname \"*fix-security-issues*\" -not -path \"*/node_modules/*\" 2>/dev/null)",
+      "Read(//d//**)",
+      "Bash(gh auth *)",
+      "Bash(python3 -c ' *)",
+      "Bash(node \"C:\\\\Users\\\\Abdul\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--projects-codebase-my-app\\\\f1e1d8ae-a7f8-43f8-a0a9-811cf725ee93\\\\scratchpad\\\\dump.js\")"
     ],
     "additionalDirectories": [
       "\\tmp",
