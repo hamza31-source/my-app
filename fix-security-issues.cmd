@@ -1,3 +1,5 @@
 @echo off
-REM Security Issues Fixer
-node "%~dp0simple-fix.js" %*
+REM Security Issues Fixer - Windows Batch Wrapper
+REM Usage: fix-security-issues --all
+
+node "%~dp0run-security.js" %*
