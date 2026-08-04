@@ -4,17 +4,17 @@
 
 const mysql = require('mysql');
 
-// VULNERABILITY 1: SQL Injection
+// Fixed: parameterized query prevents SQL injection
 function getUserById(userId) {
-  const query = `SELECT * FROM users WHERE id = ${userId}`;
-  db.query(query, (err, results) => {
+  const query = 'SELECT * FROM users WHERE id = ?';
+  db.query(query, [userId], (err, results) => {
     if (err) throw err;
     return results;
   });
 }
 
-// VULNERABILITY 2: Hardcoded Secret
-const API_KEY = "sk-1234567890abcdefghijklmnop";
+// Fixed: credential loaded from environment instead of hardcoded
+const API_KEY = process.env.DATABASE_API_KEY;
 const DB_PASSWORD = process.env.PASSWORD;
 
 function connectToDatabase() {

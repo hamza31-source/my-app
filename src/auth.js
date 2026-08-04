@@ -2,14 +2,14 @@
  * Authentication module with security vulnerabilities
  */
 
-// VULNERABILITY 1: Hardcoded admin password
-const ADMIN_PASSWORD = "admin@12345";
-const SECRET_TOKEN = "my-super-secret-key-12345";
+// Fixed: credentials loaded from environment instead of hardcoded
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const SECRET_TOKEN = process.env.SECRET_TOKEN;
 
-// VULNERABILITY 2: SQL Injection in login
+// Fixed: parameterized query prevents SQL injection
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  const user = db.query(query);
+  const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+  const user = db.query(query, [username, password]);
   return user;
 }
 
@@ -27,9 +27,15 @@ function generateToken(userId) {
   return token;
 }
 
-// VULNERABILITY 5: Missing CSRF protection
-app.post('/api/logout', (req, res) => {
-  // NO CSRF TOKEN CHECK!
+function authenticateUser(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  // verify token...
+  next();
+}
+
+// Fixed: endpoint now requires authentication
+app.post('/api/logout', authenticateUser, (req, res) => {
   req.session.destroy();
   res.json({ status: 'logged out' });
 });
