@@ -33,17 +33,8 @@ function loadEnv() {
 loadEnv();
 
 // Fix functions for each vulnerability type
+// NOTE: hardcoded secrets are intentionally NOT scanned or fixed here — see SKILL.md guardrails.
 const fixes = {
-  hardcoded_secrets: (content) => {
-    return content
-      .replace(/const\s+API_KEY\s*=\s*["']sk-[^"']+["']/g, 'const API_KEY = process.env.STRIPE_KEY')
-      .replace(/const\s+GITHUB_TOKEN\s*=\s*["']ghp_[^"']+["']/g, 'const GITHUB_TOKEN = process.env.GITHUB_TOKEN')
-      .replace(/const\s+DATABASE_PASSWORD\s*=\s*["'][^"']+["']/g, 'const DATABASE_PASSWORD = process.env.DB_PASSWORD')
-      .replace(/const\s+STRIPE_KEY\s*=\s*["']sk_[^"']+["']/g, 'const STRIPE_KEY = process.env.STRIPE_KEY')
-      .replace(/const\s+PAYMENT_API_SECRET\s*=\s*["'][^"']+["']/g, 'const PAYMENT_API_SECRET = process.env.API_SECRET')
-      .replace(/const\s+TWILIO_AUTH_TOKEN\s*=\s*["'][^"']+["']/g, 'const TWILIO_AUTH_TOKEN = process.env.TWILIO_TOKEN');
-  },
-
   xss_vulnerability: (content) => {
     return content.replace(/\.innerHTML\s*=/g, '.textContent =');
   },
@@ -74,15 +65,9 @@ function scanForVulnerabilities() {
   }
 
   const files = fs.readdirSync(srcDir)
-    .filter(f => f.startsWith('vulnerable-') && f.endsWith('.js'));
+    .filter(f => f.endsWith('.js'));
 
   const patterns = {
-    hardcoded_secrets: [
-      /const\s+API_KEY\s*=\s*["']sk-[^"']+["']/g,
-      /const\s+GITHUB_TOKEN\s*=\s*["']ghp_[^"']+["']/g,
-      /const\s+DATABASE_PASSWORD\s*=\s*["'][^"']+["']/g,
-      /const\s+STRIPE_KEY\s*=\s*["']sk_[^"']+["']/g,
-    ],
     xss_vulnerability: [/\.innerHTML\s*=/g],
     sql_injection: [/const\s+\w+\s*=\s*[`]SELECT.*\$\{/g],
     missing_authentication: [/app\.post\(['"]\/api\/process-payment['"],\s*\(req,\s*res\)/g],
@@ -176,7 +161,7 @@ function createPRAndPush(fixedFiles, issueCount) {
 
     // Create PR
     const prTitle = `🔒 Security: Fix ${issueCount} Vulnerabilities`;
-    const prBody = `Automatically fixed ${issueCount} security vulnerabilities in ${fixedFiles.length} files.\n\nIssues fixed:\n- Hardcoded secrets\n- XSS vulnerabilities\n- SQL injection\n- Missing authentication`;
+    const prBody = `Automatically fixed ${issueCount} security vulnerabilities in ${fixedFiles.length} files.\n\nIssues fixed:\n- XSS vulnerabilities\n- SQL injection\n- Missing authentication`;
 
     const prCmd = `gh pr create --base main --head ${branchName} --title "${prTitle}" --body "${prBody}"`;
 
