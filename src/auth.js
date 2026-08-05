@@ -6,17 +6,16 @@
 const ADMIN_PASSWORD = "admin@12345";
 const SECRET_TOKEN = "my-super-secret-key-12345";
 
-// VULNERABILITY 2: SQL Injection in login
 function loginUser(username, password) {
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  const user = db.query(query);
+  const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+  const user = db.query(query, [username, password]);
   return user;
 }
 
 // VULNERABILITY 3: Weak password storage (plain text)
 function createUser(username, email, password) {
-  const query = `INSERT INTO users (username, email, password) VALUES ('${username}', '${email}', '${password}')`;
-  db.query(query);
+  const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(query, [username, email, password]);
   return { status: 'created' };
 }
 
